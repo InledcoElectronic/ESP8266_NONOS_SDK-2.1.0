@@ -6,7 +6,8 @@
  */
 
 #include "user_udp_server.h"
-#include "driver/uart0.h"
+
+#include "../include/user_uart.h"
 
 LOCAL struct espconn user_udp_server;
 

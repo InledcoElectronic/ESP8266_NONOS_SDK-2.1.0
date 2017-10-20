@@ -41,22 +41,6 @@
 #define UART0   0
 #define UART1   1
 
-#define	STOP_BITS_ONE		1
-#define	STOP_BITS_ONE_HALF	2
-#define	STOP_BITS_TWO		3
-
-#define	DATA_BITS_FIVE		0
-#define	DATA_BITS_SIX		1
-#define	DATA_BITS_SEVEN		2
-#define	DATA_BITS_EIGHT		3
-
-#define	BAUDRATE_9600		9600
-#define BAUDRATE_19200		19200
-#define	BAUDRATE_38400		38400
-#define	BAUDRATE_57600		57600
-#define	BAUDRATE_76800		76800
-#define	BAUDRATE_115200		115200
-
 typedef enum {
     FIVE_BITS = 0x0,
     SIX_BITS = 0x1,

@@ -6,7 +6,8 @@
  */
 
 #include "user_tcp_client.h"
-#include "driver/uart0.h"
+
+#include "../include/user_uart.h"
 
 LOCAL struct espconn user_tcp_client;
 

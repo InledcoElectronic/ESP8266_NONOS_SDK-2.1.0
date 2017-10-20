@@ -10,14 +10,14 @@
 #include "espconn.h"
 #include "ets_sys.h"
 #include "gpio.h"
+
+#include "../include/user_uart.h"
 #include "mem.h"
 #include "os_type.h"
 #include "osapi.h"
 #include "smartconfig.h"
 #include "user_interface.h"
 #include "driver/key.h"
-#include "driver/uart0.h"
-#include "driver/uart1.h"
 #include "user_net.h"
 #include "xlink/xlink_type.h"
 #include "xlink/Xlink_Head_Adaptation.h"
@@ -81,13 +81,12 @@ user_rf_pre_init( void )
 {
 }
 
-void ICACHE_FLASH_ATTR user_init( void )
+void ICACHE_FLASH_ATTR app_init( void )
 {
 	gpio_init();
-//	system_uart_swap();
+	UART_SetPrintPort( UART0 );
 	GPIO_DIS_OUTPUT( 0 );
 	GPIO_DIS_OUTPUT( 13 );
-//	PIN_FUNC_SELECT( PERIPHS_IO_MUX_GPIO2_U, FUNC_U1TXD_BK );
 	PIN_FUNC_SELECT( PERIPHS_IO_MUX_GPIO0_U, FUNC_GPIO0 );
 	PIN_FUNC_SELECT( PERIPHS_IO_MUX_GPIO4_U, FUNC_GPIO4 );
 	PIN_FUNC_SELECT( PERIPHS_IO_MUX_GPIO5_U, FUNC_GPIO5 );
@@ -97,29 +96,20 @@ void ICACHE_FLASH_ATTR user_init( void )
 	GPIO_OUTPUT_SET( 14, 0 );
 	GPIO_OUTPUT_SET( 16, 0 );
 	GPIO_OUTPUT_SET( 4, 0 );
-//	uart_div_modify( UART1, UART_CLK_FREQ / BAUDRATE_9600 );
-//	WRITE_PERI_REG( UART_CONF0( UART1 ), ( STOP_BITS_ONE << UART_STOP_BIT_NUM_S ) | ( DATA_BITS_EIGHT << UART_BIT_NUM_S ) );
-//		//clear rx and tx fifo,not ready
-//		SET_PERI_REG_MASK( UART_CONF0( UART1 ), UART_RXFIFO_RST | UART_TXFIFO_RST );    //RESET FIFO
-//		CLEAR_PERI_REG_MASK( UART_CONF0( UART1 ), UART_RXFIFO_RST | UART_TXFIFO_RST );
-//
-//		WRITE_PERI_REG( UART_CONF1( UART1 ), ( ( (UART_RXFIFO_FULL_THRHD & 96) << UART_RXFIFO_FULL_THRHD_S ) ) |
-//											   ( (UART_RX_TOUT_THRHD & 32) << UART_RX_TOUT_THRHD_S ) | UART_RX_TOUT_EN |
-//											   ( (UART_TXFIFO_EMPTY_THRHD & 1) << UART_TXFIFO_EMPTY_THRHD_S ) );
-//	UART_SetPrintPort( UART1 );
-	uart1_init( BAUDRATE_19200 );
+
 	modbus_init();
 	user_key_init();
 	uart0_set_rx_cb( modbus_receive );
 	uart0_set_tx_empty_cb( NULL );
+	uart1_set_tx_empty_cb( NULL );
 	modbus_set_recv_frame_fn( user_net_send_pipe );
 	user_tcp_set_recv_pipe_fn( modbus_send );
 	user_udp_set_recv_pipe_fn( modbus_send );
-//	system_timer_reinit();
-//	wifi_status_led_install( 12, PERIPHS_IO_MUX_MTDI_U, FUNC_GPIO12 );
 
-//	uart_init( BIT_RATE_115200, BIT_RATE_115200 );
-//	uart_rx_intr_enable( UART0 );
-	system_init_done_cb( user_net_init );
-//	system_upgrade_start();
+	user_net_init();
+}
+
+void ICACHE_FLASH_ATTR user_init( void )
+{
+	system_init_done_cb( app_init );
 }

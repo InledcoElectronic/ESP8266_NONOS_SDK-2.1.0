@@ -11,7 +11,7 @@
 #include "c_types.h"
 #include "osapi.h"
 #include "mem.h"
-#include "driver/uart0.h"
+#include "user_uart.h"
 
 #define	MODBUS_BROADCAST_ADDRESS		0x00
 
