@@ -68,7 +68,7 @@ void ICACHE_FLASH_ATTR modbus_init( void )
 {
 	modbus_rx_buffer.buffer = (uint8_t *) os_zalloc( MODBUS_BUFFER_SIZE );
 	uart0_init( BAUDRATE_19200, 32, &modbus_rx_buffer );
-	uart1_init( BAUDRATE_19200 );
+	uart1_init( BAUDRATE_115200 );
 	uart_enable_isr();
 }
 
@@ -115,7 +115,7 @@ void ICACHE_FLASH_ATTR modbus_send( uint8_t *pbuf, uint16_t len )
 		{
 			for ( i = 0; i < len; i++ )
 			{
-				uart1_send_byte( *( pbuf + i ) );
+				uart0_send_byte( *( pbuf + i ) );
 			}
 		}
 	}

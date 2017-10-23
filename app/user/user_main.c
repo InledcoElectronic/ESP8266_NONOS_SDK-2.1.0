@@ -84,7 +84,8 @@ user_rf_pre_init( void )
 void ICACHE_FLASH_ATTR app_init( void )
 {
 	gpio_init();
-	UART_SetPrintPort( UART0 );
+	system_uart_swap();
+	UART_SetPrintPort( UART1 );
 	GPIO_DIS_OUTPUT( 0 );
 	GPIO_DIS_OUTPUT( 13 );
 	PIN_FUNC_SELECT( PERIPHS_IO_MUX_GPIO0_U, FUNC_GPIO0 );
