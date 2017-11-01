@@ -67,8 +67,7 @@ modbus_recv_frame_cb_t modbus_recv_frame_cb;
 void ICACHE_FLASH_ATTR modbus_init( void )
 {
 	modbus_rx_buffer.buffer = (uint8_t *) os_zalloc( MODBUS_BUFFER_SIZE );
-	uart0_init( BAUDRATE_19200, 32, &modbus_rx_buffer );
-	uart1_init( BAUDRATE_115200 );
+	uart0_init( BAUDRATE_9600, 64, &modbus_rx_buffer );
 	uart_enable_isr();
 }
 

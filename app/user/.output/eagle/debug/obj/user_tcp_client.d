@@ -21,6 +21,7 @@
  ../include/xlink/Xlink_Head_Adaptation.h ../include/xlink/xlink_type.h \
  ../include/xlink/xlink_All_Device.h ../include/xlink/xlink_system.h \
  ../include/xlink/Xlink_Head_Adaptation.h \
- ../include/xlink/xlink_message.h ../include/user_uart.h \
+ ../include/xlink/xlink_message.h ../../include/gpio.h \
+ ../include/user_ringbuffer.h ../include/user_uart.h \
  ../include/../include/driver/uart.h \
  ../include/../include/driver/uart_register.h ../../include/eagle_soc.h

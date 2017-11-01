@@ -19,8 +19,6 @@ LOCAL uart_rx_cb_t uart0_rx_cb;
 LOCAL uart_tx_empty_cb_t uart0_tx_empty_cb;
 LOCAL uart_tx_empty_cb_t uart1_tx_empty_cb;
 
-extern UartDevice UartDev;
-
 /**
  * frame_interval: interval between two frames, unit bit
  */
@@ -30,10 +28,6 @@ void ICACHE_FLASH_ATTR uart0_init( uint32_t rate, uint32_t frame_interval, void 
 	PIN_PULLUP_DIS( PERIPHS_IO_MUX_U0TXD_U );
 	PIN_FUNC_SELECT( PERIPHS_IO_MUX_U0TXD_U, FUNC_U0TXD );
 	uart_div_modify( UART0, UART_CLK_FREQ / rate );
-//	WRITE_PERI_REG(UART_CONF0(UART0), ((UartDev.exist_parity & UART_PARITY_EN_M)  <<  UART_PARITY_EN_S) //SET BIT AND PARITY MODE
-//										| ((UartDev.parity & UART_PARITY_M)  <<UART_PARITY_S )
-//										| ((UartDev.stop_bits & UART_STOP_BIT_NUM) << UART_STOP_BIT_NUM_S)
-//										| ((UartDev.data_bits & UART_BIT_NUM) << UART_BIT_NUM_S));
 	WRITE_PERI_REG( UART_CONF0( UART0 ), ( PARITY_NONE << UART_PARITY_S ) |
 			( STOP_BITS_ONE << UART_STOP_BIT_NUM_S ) | ( DATA_BITS_EIGHT << UART_BIT_NUM_S ) );
 	//clear rx and tx fifo,not ready
@@ -57,10 +51,6 @@ void ICACHE_FLASH_ATTR uart1_init( uint32_t rate )
 {
 	PIN_FUNC_SELECT( PERIPHS_IO_MUX_GPIO2_U, FUNC_U1TXD_BK );
 	uart_div_modify( UART1, UART_CLK_FREQ / rate );
-//	WRITE_PERI_REG(UART_CONF0(UART1), ((UartDev.exist_parity & UART_PARITY_EN_M)  <<  UART_PARITY_EN_S) //SET BIT AND PARITY MODE
-//										| ((UartDev.parity & UART_PARITY_M)  <<UART_PARITY_S )
-//										| ((UartDev.stop_bits & UART_STOP_BIT_NUM) << UART_STOP_BIT_NUM_S)
-//										| ((UartDev.data_bits & UART_BIT_NUM) << UART_BIT_NUM_S));
 	WRITE_PERI_REG( UART_CONF0( UART1 ), ( PARITY_NONE << UART_PARITY_S ) |
 			( STOP_BITS_ONE << UART_STOP_BIT_NUM_S ) | ( DATA_BITS_EIGHT << UART_BIT_NUM_S ) );
 	//clear rx and tx fifo,not ready
@@ -68,8 +58,6 @@ void ICACHE_FLASH_ATTR uart1_init( uint32_t rate )
 	CLEAR_PERI_REG_MASK( UART_CONF0( UART1 ), UART_RXFIFO_RST | UART_TXFIFO_RST );
 	WRITE_PERI_REG( UART_CONF1( UART1 ),
 				( ( (UART_RXFIFO_FULL_THRHD & 1) << UART_RXFIFO_FULL_THRHD_S ) ) | ( (UART_TXFIFO_EMPTY_THRHD & 1) << UART_TXFIFO_EMPTY_THRHD_S ) );
-//	WRITE_PERI_REG( UART_CONF1( UART1 ),
-//			 (UART_RXFIFO_FULL_THRHD & UartDev.rcv_buff.TrigLvl) << UART_RXFIFO_FULL_THRHD_S );
 	//clear all interrupt
 	WRITE_PERI_REG( UART_INT_CLR( UART1 ), 0xFFFF );
 	SET_PERI_REG_MASK( UART_INT_ENA( UART1 ), UART_TXFIFO_EMPTY_INT_ENA );

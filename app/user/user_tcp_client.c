@@ -6,11 +6,15 @@
  */
 
 #include "user_tcp_client.h"
-
+#include "gpio.h"
+#include "../include/user_ringbuffer.h"
 #include "../include/user_uart.h"
 
-LOCAL struct espconn user_tcp_client;
+#define	TCP_SEND_BUFFER_SIZE	1024
 
+LOCAL struct espconn user_tcp_client;
+LOCAL uint8_t tcp_send_buffer[TCP_SEND_BUFFER_SIZE];
+LOCAL ringbuf_t tcp_rb_send;
 LOCAL uint8_t reconn_cnt;
 LOCAL bool isConnectServer;
 LOCAL bool flag_dns_discovery;
@@ -20,7 +24,8 @@ os_timer_t dns_timer;
 
 LOCAL user_tcp_recv_pipe_cb_t user_tcp_recv_pipe_cb;
 
-void ICACHE_FLASH_ATTR user_tcp_reconnect( void );
+void user_tcp_reconnect( void );
+void user_tcp_send_loop( void );
 
 void ICACHE_FLASH_ATTR user_tcp_status( XLINK_APP_STATUS status )
 {
@@ -129,7 +134,8 @@ void ICACHE_FLASH_ATTR user_tcp_func_process( void *arg )
 //				XlinkGetServerTime();
 			}
 			XlinkSystemLoop( ctime, 0 );
-			XlinkSystemTcpLoop();
+//			XlinkSystemTcpLoop();
+			user_tcp_send_loop();
 		}
 	}
 	else
@@ -219,7 +225,31 @@ void ICACHE_FLASH_ATTR user_tcp_send_pipe( uint8_t *pbuf, uint16_t len )
 {
 	if( isConnectServer )
 	{
-		XlinkSendTcpPipe2( pbuf, len );
+		user_rb_put( &tcp_rb_send, pbuf, len );
+//		XlinkSendTcpPipe2( pbuf, len );
+	}
+}
+
+void ICACHE_FLASH_ATTR user_tcp_send_loop( void )
+{
+	uint32_t len;
+	if( isConnectServer )
+	{
+		len = user_rb_unread_size( &tcp_rb_send );
+		if( len == 0 )
+		{
+			return;
+		}
+		if( GPIO_INPUT_GET( 12 ) )
+		{
+			GPIO_OUTPUT_SET( 12, 0 );
+		}
+		else
+		{
+			GPIO_OUTPUT_SET( 12, 1 );
+		}
+		user_rb_get( &tcp_rb_send, tcp_send_buffer, len );
+		XlinkSendTcpPipe2( tcp_send_buffer, len );
 	}
 }
 
@@ -267,4 +297,6 @@ void ICACHE_FLASH_ATTR user_tcp_client_init( void )
 	espconn_regist_reconcb( &user_tcp_client, user_tcp_reconnect_cb );
 	espconn_regist_recvcb( &user_tcp_client, user_tcp_recv_cb );
 	espconn_regist_sentcb( &user_tcp_client, user_tcp_sent_cb );
+
+	user_rb_init( &tcp_rb_send, tcp_send_buffer, sizeof( tcp_send_buffer ) );
 }

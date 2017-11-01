@@ -85,6 +85,7 @@ void ICACHE_FLASH_ATTR app_init( void )
 {
 	gpio_init();
 	system_uart_swap();
+	uart1_init( BAUDRATE_115200 );
 	UART_SetPrintPort( UART1 );
 	GPIO_DIS_OUTPUT( 0 );
 	GPIO_DIS_OUTPUT( 13 );
